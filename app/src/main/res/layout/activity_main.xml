@@ -1,0 +1,13 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:drawableLeft="@drawable/ic_note_add_black"
+        android:text="@string/add_button_text"
+        android:onClick="addNewTask"
+        android:textSize="18dp"/>
+</LinearLayout>
+
