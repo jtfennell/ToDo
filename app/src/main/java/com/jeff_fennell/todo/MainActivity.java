@@ -1,19 +1,28 @@
 package com.jeff_fennell.todo;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 
 public class MainActivity extends ActionBarActivity {
+    public static TaskDbHelper mainDbHelper;
+    public static SQLiteDatabase mainDb;
+    public static Boolean dbOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        openDatabase();
+        loadTasks();
+
     }
 
     @Override
@@ -42,4 +51,29 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent(this,CreateTask.class);
         startActivity(intent);
     }
+
+    public void openDatabase() {
+        //TODO-open up database in background thread because it is a time-expensive operation
+        //subclass AsyncTask-- http://developer.android.com/reference/android/os/AsyncTask.html
+        //use this function in CreateTask when inserting values into database
+        if(!dbOpen){
+            try{
+                //Access database. If schema not already set up, it will automatically be created
+                mainDbHelper = new TaskDbHelper(getApplicationContext());
+                mainDb = mainDbHelper.getWritableDatabase();
+                dbOpen = mainDb.isOpen();
+            }catch (Exception e) {
+                Log.d("exception caught:", "opening database", e);
+            }
+        }
+    }
+
+    public void loadTasks() {
+
+        //close database
+        mainDb.close();
+        dbOpen = false;
+    }
+
+
 }

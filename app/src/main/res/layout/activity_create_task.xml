@@ -10,12 +10,25 @@
     android:orientation="vertical"
     tools:context="com.jeff_fennell.todo.CreateTask">
     <EditText
+        android:id="@+id/task_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/task_title"/>
     <EditText
+        android:id="@+id/task_details"
         android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:hint="@string/task_description"
+        android:gravity="top"
+        />
+    <Button
         android:layout_height="wrap_content"
-        android:hint="@string/task_description"/>
-    <fac
+        android:layout_width="match_parent"
+        android:drawableLeft="@drawable/ic_note_add_black"
+        android:text="@string/add_task"
+        android:onClick="saveTask"
+        android:textSize="18dp"
+        android:layout_weight="0" />
 </LinearLayout>
+
+

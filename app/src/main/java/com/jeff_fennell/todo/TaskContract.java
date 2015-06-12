@@ -15,6 +15,6 @@ public final class TaskContract {
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_DETAILS = "details";
         public static final String COLUMN_NAME_COMPLETE = "complete";
-
+        public static final String COLUMN_NAME_TASK_ID = "entry_id";
     }
 }
