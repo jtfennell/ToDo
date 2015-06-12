@@ -10,7 +10,7 @@ import android.util.Log;
  */
 public class TaskDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Task.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String LARGE_SIZE = "(100)";
@@ -25,6 +25,7 @@ public class TaskDbHelper extends SQLiteOpenHelper {
             " (" + TaskContract.TaskEntry._ID + " INTEGER PRIMARY KEY," +
             TaskContract.TaskEntry.COLUMN_NAME_TASK_ID + INT_TYPE + SMALL_SIZE + COMMA_SEP +
             TaskContract.TaskEntry.COLUMN_NAME_DETAILS + TEXT_TYPE + LARGE_SIZE + COMMA_SEP +
+            TaskContract.TaskEntry.COLUMN_NAME_TITLE + TEXT_TYPE + SMALL_SIZE + COMMA_SEP +
             TaskContract.TaskEntry.COLUMN_NAME_COMPLETE + CHAR_TYPE + TINY_SIZE + ")"
             ;
 
