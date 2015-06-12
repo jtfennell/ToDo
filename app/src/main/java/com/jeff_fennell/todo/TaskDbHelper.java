@@ -20,7 +20,7 @@ public class TaskDbHelper extends SQLiteOpenHelper {
     private static final String CHAR_TYPE = " CHAR";
     private static final String COMMA_SEP = ", ";
     private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS" + TaskContract.TaskEntry.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + TaskContract.TaskEntry.TABLE_NAME;
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE IF NOT EXISTS " + TaskContract.TaskEntry.TABLE_NAME +
             " (" + TaskContract.TaskEntry._ID + " INTEGER PRIMARY KEY," +
             TaskContract.TaskEntry.COLUMN_NAME_TASK_ID + INT_TYPE + SMALL_SIZE + COMMA_SEP +
@@ -42,6 +42,7 @@ public class TaskDbHelper extends SQLiteOpenHelper {
     //http://developer.android.com/training/basics/data-storage/databases.html
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d("Updated database", "version " + DATABASE_VERSION);
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
     }
