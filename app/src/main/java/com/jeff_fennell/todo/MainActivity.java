@@ -1,6 +1,7 @@
 package com.jeff_fennell.todo;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -69,11 +71,59 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void loadTasks() {
+        //Specify which columns from the database will actually be used
+        String[] projection = {
+                TaskContract.TaskEntry._ID,
+                TaskContract.TaskEntry.COLUMN_NAME_TITLE,
+                TaskContract.TaskEntry.COLUMN_NAME_COMPLETE
+        };
 
+        //specify how results are ordered
+        String sortOrder = TaskContract.TaskEntry._ID + " DESC";
+
+        Cursor c = mainDb.query(
+                TaskContract.TaskEntry.TABLE_NAME,
+                projection,
+                null, //returns all rows of table
+                null,
+                null, //don't group the rows
+                null, //don't filter by row groups
+                sortOrder
+        );
+        String[] columns = c.getColumnNames();
+        for (String column : columns) {
+            Log.d("column name", column);
+        }
+
+        boolean allRowsLoaded = false;
+        //move cursor to first row in the table
+        c.moveToFirst();
+        while(!allRowsLoaded){
+            String taskTitle = c.getString(
+                    c.getColumnIndex(TaskContract.TaskEntry.COLUMN_NAME_TITLE)
+            );
+
+            long taskID = c.getLong(
+                    c.getColumnIndex(TaskContract.TaskEntry._ID)
+            );
+
+            String taskComplete = c.getString(
+                    c.getColumnIndex(TaskContract.TaskEntry.COLUMN_NAME_COMPLETE)
+            );
+
+            Log.d("title",taskTitle);
+            Log.d("task complete", taskComplete);
+            //Log.d("Id", Long.toString(taskID));
+            //moveToNext returns true if there is a row in the next position
+            allRowsLoaded = !c.moveToNext();
+        }
 
         //close database
         mainDb.close();
     }
-
-
+    /**
+    public void createTaskView(String title, String complete, ) {
+        LinearLayout task = new LinearLayout(this);
+    }
+    */
 }
