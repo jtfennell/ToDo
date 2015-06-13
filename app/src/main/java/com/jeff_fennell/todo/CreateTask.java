@@ -9,7 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 
 public class CreateTask extends ActionBarActivity {
@@ -20,7 +22,7 @@ public class CreateTask extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
 
-        openDatabase();
+        MainActivity.openDatabase("write");
     }
 
     @Override
@@ -46,11 +48,6 @@ public class CreateTask extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void openDatabase() {
-        MainActivity.mainDb = MainActivity.mainDbHelper.getWritableDatabase();
-        Log.d("database open","" + MainActivity.mainDb.isOpen());
-    }
-
     public void saveTask(View view) {
         EditText taskTitleInput = (EditText)findViewById(R.id.task_title);
         EditText taskDetailInput = (EditText)findViewById((R.id.task_details));
@@ -64,9 +61,14 @@ public class CreateTask extends ActionBarActivity {
 
         //Create map of values, where column names are the keys
         ContentValues values = new ContentValues();
+
+        //determine date & time of post
+        Long currentTime = new Date().getTime();
+
         values.put(TaskContract.TaskEntry.COLUMN_NAME_TITLE, taskTitle);
         values.put(TaskContract.TaskEntry.COLUMN_NAME_DETAILS, taskDetails);
         values.put(TaskContract.TaskEntry.COLUMN_NAME_COMPLETE, "F");
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_DATE_CREATED, currentTime);
 
         try {
             //Insert the new row into the table, returning primary key of the row (-1 if error)
