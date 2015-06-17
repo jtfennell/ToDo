@@ -9,12 +9,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toolbar;
 
 
 public class MainActivity extends ActionBarActivity {
     public static TaskDbHelper mainDbHelper;
     public static SQLiteDatabase mainDb;
+    public static final String COMPLETE = "T";
+    public static final String NOT_COMPLETE = "F";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,11 +141,30 @@ public class MainActivity extends ActionBarActivity {
      * @param title String fetched from database indicating the task's title
      * @param complete String fetched from database indicating whether or not the task is finished
      */
-    public void createTaskView(String title, String complete) {
-        Log.d("title",title);
-        Log.d("task complete",complete);
+    public void createTaskView(String title, String taskStatus) {
+        //get the viewgroup from the pre-defined layout
+        LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
 
-        LinearLayout task = new LinearLayout(this);
+          //Debugging
+//        Log.d("title",title);
+//        Log.d("task complete",complete);
+
+        //create a text view to hold the task title
+        TextView titleHolder = new TextView(this);
+        titleHolder.setText(title);
+        //set dimensions of textView
+        titleHolder.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        //titleHolder.height
+
+        //create a checkbox for the task
+        CheckBox taskComplete = new CheckBox(this);
+
+        if (taskStatus.equals(COMPLETE)){
+          taskComplete.setChecked(true);
+        }
+        taskList.addView(titleHolder);
+        taskList.addView(taskComplete);
     }
 
 }
