@@ -70,6 +70,9 @@ public class MainActivity extends ActionBarActivity {
             }
     }
 
+    /**
+     * Retrieves the table of tasks from the database and renders them
+     */
     public void loadTasks() {
         //Specify which columns from the database will actually be used
         String[] projection = {
@@ -97,33 +100,46 @@ public class MainActivity extends ActionBarActivity {
 
         boolean allRowsLoaded = false;
         //move cursor to first row in the table
-        c.moveToFirst();
-        while(!allRowsLoaded){
-            String taskTitle = c.getString(
-                    c.getColumnIndex(TaskContract.TaskEntry.COLUMN_NAME_TITLE)
-            );
 
-            long taskID = c.getLong(
-                    c.getColumnIndex(TaskContract.TaskEntry._ID)
-            );
+        //only try to read the database values if there is something in the table
+        if (c.getCount() > 0) {
+            c.moveToFirst();
+            while (!allRowsLoaded) {
+                String taskTitle = c.getString(
+                        c.getColumnIndex(TaskContract.TaskEntry.COLUMN_NAME_TITLE)
+                );
 
-            String taskComplete = c.getString(
-                    c.getColumnIndex(TaskContract.TaskEntry.COLUMN_NAME_COMPLETE)
-            );
+                long taskID = c.getLong(
+                        c.getColumnIndex(TaskContract.TaskEntry._ID)
+                );
 
-            Log.d("title",taskTitle);
-            Log.d("task complete", taskComplete);
-            //Log.d("Id", Long.toString(taskID));
-            //moveToNext returns true if there is a row in the next position
-            allRowsLoaded = !c.moveToNext();
+                String taskComplete = c.getString(
+                        c.getColumnIndex(TaskContract.TaskEntry.COLUMN_NAME_COMPLETE)
+                );
+
+                //render the task
+                createTaskView(taskTitle, taskComplete);
+
+                //moveToNext returns true if there is a row in the next position
+                allRowsLoaded = !c.moveToNext();
+            }
         }
 
         //close database
         mainDb.close();
     }
+
     /**
-    public void createTaskView(String title, String complete, ) {
+     * Renders an individual task
+     *
+     * @param title String fetched from database indicating the task's title
+     * @param complete String fetched from database indicating whether or not the task is finished
+     */
+    public void createTaskView(String title, String complete) {
+        Log.d("title",title);
+        Log.d("task complete",complete);
+
         LinearLayout task = new LinearLayout(this);
     }
-    */
+
 }
