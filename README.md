@@ -1,3 +1,3 @@
 # ToDo
 
-A simple task Editor for Android
+A simple to-do list app for Android
