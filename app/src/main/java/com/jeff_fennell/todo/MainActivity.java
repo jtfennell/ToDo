@@ -130,6 +130,9 @@ public class MainActivity extends ActionBarActivity {
                 allRowsLoaded = !c.moveToNext();
             }
         }
+        else {
+            //render a message saying that there are no tasks
+        }
 
         //close database
         mainDb.close();
@@ -153,11 +156,12 @@ public class MainActivity extends ActionBarActivity {
         TextView titleHolder = new TextView(this);
         titleHolder.setText(title);
         //set dimensions of textView
-        titleHolder.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        titleHolder.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         //titleHolder.height
 
         //create a checkbox for the task
+        //TODO- checkbox width spans entire parent width right now. see if you can make the width of the textbox "wrap_content"
         CheckBox taskComplete = new CheckBox(this);
 
         if (taskStatus.equals(COMPLETE)){
