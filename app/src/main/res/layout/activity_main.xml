@@ -14,13 +14,6 @@
             android:id="@+id/task_list">
         </LinearLayout>
     </ScrollView>
-    <Button
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:drawableLeft="@drawable/ic_note_add_black"
-        android:text="@string/add_button_text"
-        android:onClick="createNewTask"
-        android:textSize="18dp" />
 </LinearLayout>
 
 

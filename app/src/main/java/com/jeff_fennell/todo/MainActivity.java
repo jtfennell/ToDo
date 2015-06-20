@@ -50,17 +50,20 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.new_task){
+            createNewTask();
+        }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public void createNewTask(View view) {
+    public void createNewTask() {
         Intent intent = new Intent(this,CreateTask.class);
         startActivity(intent);
     }
 
     public static void openDatabase(String readOrWrite) {
-        //TODO-open up database in background thread because it is a time-expensive operation
+        //TODO-open up database in background thread because it is a time-expensive operation (will slow down UI thread)
         //subclass AsyncTask-- http://developer.android.com/reference/android/os/AsyncTask.html
         //use this function in CreateTask when inserting values into database
 
@@ -133,9 +136,6 @@ public class MainActivity extends ActionBarActivity {
         else {
             //render a message saying that there are no tasks
         }
-
-        //close database
-        mainDb.close();
     }
 
     /**
