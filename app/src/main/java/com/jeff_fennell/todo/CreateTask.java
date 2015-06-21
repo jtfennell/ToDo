@@ -1,6 +1,8 @@
 package com.jeff_fennell.todo;
 
+import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,12 +11,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.jeff_fennell.dataEntities.Task;
+
 import java.util.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
 
 public class CreateTask extends ActionBarActivity {
+    public static String taskIdentifier = "new task";
 
 
     @Override
@@ -67,7 +72,7 @@ public class CreateTask extends ActionBarActivity {
 
         values.put(TaskContract.TaskEntry.COLUMN_NAME_TITLE, taskTitle);
         values.put(TaskContract.TaskEntry.COLUMN_NAME_DETAILS, taskDetails);
-        values.put(TaskContract.TaskEntry.COLUMN_NAME_COMPLETE, "F");
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_COMPLETE, Task.TASK_NOT_COMPLETE);
         values.put(TaskContract.TaskEntry.COLUMN_NAME_DATE_CREATED, currentTime);
 
         try {
@@ -85,6 +90,13 @@ public class CreateTask extends ActionBarActivity {
         }catch (SQLException e){
             Log.d("Error", "inserting data into table failed");
         }
+
+        //pass the newly created task back to the MainActivity as a parcel
+        Task thisTask = new Task(taskTitle,currentTime,taskDetails,Task.TASK_NOT_COMPLETE);
+        Log.d("task created: ", thisTask.toString());
+        Intent intentToRegisterTask = new Intent();
+        intentToRegisterTask.putExtra(taskIdentifier, thisTask);
+        setResult(Activity.RESULT_OK, intentToRegisterTask);
 
         //Return to Main Activity
         Log.d("closing Activity", "CreateTask");

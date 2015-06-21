@@ -1,5 +1,6 @@
 package com.jeff_fennell.todo;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,12 +16,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import com.jeff_fennell.dataEntities.Task;
+
 
 public class MainActivity extends ActionBarActivity {
     public static TaskDbHelper mainDbHelper;
     public static SQLiteDatabase mainDb;
-    public static final String COMPLETE = "T";
-    public static final String NOT_COMPLETE = "F";
+    public static final int staticRequestCode = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +60,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void createNewTask() {
-        Intent intent = new Intent(this,CreateTask.class);
-        startActivity(intent);
+        Intent createNewTask = new Intent(this,CreateTask.class);
+        startActivityForResult(createNewTask, staticRequestCode);
     }
 
     public static void openDatabase(String readOrWrite) {
@@ -142,7 +144,7 @@ public class MainActivity extends ActionBarActivity {
      * Renders an individual task
      *
      * @param title String fetched from database indicating the task's title
-     * @param complete String fetched from database indicating whether or not the task is finished
+     * @param taskStatus String fetched from database indicating whether or not the task is finished
      */
     public void createTaskView(String title, String taskStatus) {
         //get the viewgroup from the pre-defined layout
@@ -155,6 +157,7 @@ public class MainActivity extends ActionBarActivity {
         //create a text view to hold the task title
         TextView titleHolder = new TextView(this);
         titleHolder.setText(title);
+        titleHolder.setTextSize(25);
         //set dimensions of textView
         titleHolder.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -164,11 +167,32 @@ public class MainActivity extends ActionBarActivity {
         //TODO- checkbox width spans entire parent width right now. see if you can make the width of the textbox "wrap_content"
         CheckBox taskComplete = new CheckBox(this);
 
-        if (taskStatus.equals(COMPLETE)){
+        if (taskStatus.equals(Task.TASK_COMPLETE)){
           taskComplete.setChecked(true);
         }
         taskList.addView(titleHolder);
         taskList.addView(taskComplete);
+    }
+
+    /**
+     * receives the newly created task from the create task activity for rendering
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == staticRequestCode) {
+            if (resultCode == Activity.RESULT_OK){
+                Task newTask = data.getParcelableExtra(CreateTask.taskIdentifier);
+
+                //render the new task to the task list
+                createTaskView(newTask.getTitle(), newTask.getComplete());
+            }
+        }
     }
 
 }
