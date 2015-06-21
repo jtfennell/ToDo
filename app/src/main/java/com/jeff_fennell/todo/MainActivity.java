@@ -23,6 +23,7 @@ public class MainActivity extends ActionBarActivity {
     public static TaskDbHelper mainDbHelper;
     public static SQLiteDatabase mainDb;
     public static final int staticRequestCode = 7;
+    public static final String bulletPoint = "\u2022 ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +157,7 @@ public class MainActivity extends ActionBarActivity {
 
         //create a text view to hold the task title
         TextView titleHolder = new TextView(this);
-        titleHolder.setText(title);
+        titleHolder.setText(bulletPoint + title);
         titleHolder.setTextSize(25);
         //set dimensions of textView
         titleHolder.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
