@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -150,29 +151,34 @@ public class MainActivity extends ActionBarActivity {
     public void createTaskView(String title, String taskStatus) {
         //get the viewgroup from the pre-defined layout
         LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
-
-          //Debugging
-//        Log.d("title",title);
-//        Log.d("task complete",complete);
+        
+        //create a container
+        LinearLayout TaskContainer = new LinearLayout(this);
 
         //create a text view to hold the task title
         TextView titleHolder = new TextView(this);
         titleHolder.setText(bulletPoint + title);
         titleHolder.setTextSize(25);
-        //set dimensions of textView
-        titleHolder.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        //titleHolder.height
+        //set dimensions of textView
+        titleHolder.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
         //create a checkbox for the task
-        //TODO- checkbox width spans entire parent width right now. see if you can make the width of the textbox "wrap_content"
         CheckBox taskComplete = new CheckBox(this);
+        taskComplete.setHighlightColor(16735446);
 
         if (taskStatus.equals(Task.TASK_COMPLETE)){
           taskComplete.setChecked(true);
         }
-        taskList.addView(titleHolder);
-        taskList.addView(taskComplete);
+
+        Button deleteButton = new Button(this);
+        deleteButton.setText("Delete");
+
+        TaskContainer.addView(titleHolder);
+        TaskContainer.addView(taskComplete);
+        TaskContainer.addView(deleteButton);
+
+        taskList.addView(TaskContainer);
     }
 
     /**
