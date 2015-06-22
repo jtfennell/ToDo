@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Paint;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +26,7 @@ public class MainActivity extends ActionBarActivity {
     public static SQLiteDatabase mainDb;
     public static final int staticRequestCode = 7;
     public static final String bulletPoint = "\u2022 ";
-    public static final String databaseEmptyMessage = "There are no tasks to display"
+    public static final String databaseEmptyMessage = "There are no tasks to display";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +165,29 @@ public class MainActivity extends ActionBarActivity {
         //create a checkbox for the task
         CheckBox taskComplete = new CheckBox(this);
         taskComplete.setHighlightColor(16735446);
+        taskComplete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View checkbox) {
+                LinearLayout taskContainer = (LinearLayout) checkbox.getParent();
+                TextView taskTitle = null;
+                Boolean foundTitle = false;
+                int layoutChildren = taskContainer.getChildCount();
+
+                for (int i = 0; i < layoutChildren; i++){
+                   if (taskContainer.getChildAt(i) instanceof TextView && !foundTitle){
+                        taskTitle = (TextView)taskContainer.getChildAt(i);
+                       //makes sure the Button does not override the title b/c it is a subclass of TextView
+                       foundTitle = true;
+                    }
+                }
+
+               if (((CheckBox)checkbox).isChecked()){
+                   taskTitle.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+               } else {
+                   taskTitle.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+               }
+            }
+        });
 
         if (taskStatus.equals(Task.TASK_COMPLETE)){
           taskComplete.setChecked(true);
