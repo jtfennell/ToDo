@@ -25,6 +25,7 @@ public class MainActivity extends ActionBarActivity {
     public static SQLiteDatabase mainDb;
     public static final int staticRequestCode = 7;
     public static final String bulletPoint = "\u2022 ";
+    public static final String databaseEmptyMessage = "There are no tasks to display"
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +108,6 @@ public class MainActivity extends ActionBarActivity {
                 sortOrder
         );
         String[] columns = c.getColumnNames();
-        for (String column : columns) {
-            Log.d("column name", column);
-        }
 
         boolean allRowsLoaded = false;
         //move cursor to first row in the table
@@ -138,7 +136,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         else {
-            //render a message saying that there are no tasks
+            renderEmptyDatabaseMessage();
         }
     }
 
@@ -200,6 +198,15 @@ public class MainActivity extends ActionBarActivity {
                 createTaskView(newTask.getTitle(), newTask.getComplete());
             }
         }
+    }
+
+    public void renderEmptyDatabaseMessage() {
+        LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
+        TextView emptyMessageHolder = new TextView(this);
+
+        emptyMessageHolder.setText(databaseEmptyMessage);
+
+        taskList.addView(emptyMessageHolder);
     }
 
 }
