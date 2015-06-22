@@ -27,6 +27,7 @@ public class MainActivity extends ActionBarActivity {
     public static final int staticRequestCode = 7;
     public static final String bulletPoint = "\u2022 ";
     public static final String databaseEmptyMessage = "There are no tasks to display";
+    public static final int sizeOfTaskTitle = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,14 +158,13 @@ public class MainActivity extends ActionBarActivity {
         //create a text view to hold the task title
         TextView titleHolder = new TextView(this);
         titleHolder.setText(bulletPoint + title);
-        titleHolder.setTextSize(25);
+        titleHolder.setTextSize(sizeOfTaskTitle);
 
         //set dimensions of textView
         titleHolder.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
         //create a checkbox for the task
         CheckBox taskComplete = new CheckBox(this);
-        taskComplete.setHighlightColor(16735446);
         taskComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View checkbox) {
@@ -181,6 +181,7 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
 
+                //toggle strike through on task
                if (((CheckBox)checkbox).isChecked()){
                    taskTitle.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                } else {
