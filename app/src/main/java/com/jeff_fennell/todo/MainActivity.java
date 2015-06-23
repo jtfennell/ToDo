@@ -1,7 +1,9 @@
 package com.jeff_fennell.todo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -156,6 +158,7 @@ public class MainActivity extends ActionBarActivity {
      * @param task - contains details about task to be created
      */
     public void createTaskView(Task task) {
+        final String title = task.getTitle();
         //get the viewgroup from the pre-defined layout
         LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
         
@@ -203,8 +206,24 @@ public class MainActivity extends ActionBarActivity {
             toggleCrossOut(titleHolder, ((CheckBox)taskComplete).isChecked());
         }
 
-        Button deleteButton = new Button(this);
+        final Button deleteButton = new Button(this);
         deleteButton.setText("Delete");
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("Confirm deletion");
+                alertDialog.setMessage("Are you sure you want to delete task: \"" + title + "\"?");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Delete",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                LinearLayout taskContainer = (LinearLayout) deleteButton.getParent();
+                            }
+                        });
+                alertDialog.show();
+            }
+        });
 
         TaskContainer.addView(titleHolder);
         TaskContainer.addView(taskComplete);
