@@ -13,6 +13,7 @@ public class Task  implements Parcelable{
     private Long dateCreated;
     private String details;
     private String complete;
+    private long id;
     public static final String TASK_COMPLETE = "T";
     public static final String TASK_NOT_COMPLETE = "F";
 
@@ -28,6 +29,10 @@ public class Task  implements Parcelable{
         dateCreated = in.readLong();
         details = in.readString();
         complete = in.readString();
+    }
+
+    public Task() {
+
     }
 
     public String getDetails() {
@@ -89,5 +94,13 @@ public class Task  implements Parcelable{
                 + ", details: " + details
                 + ", dateCreated: " + dateCreated
                 + ", complete: " + complete + "}");
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

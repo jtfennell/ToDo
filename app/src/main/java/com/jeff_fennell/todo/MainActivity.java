@@ -1,6 +1,7 @@
 package com.jeff_fennell.todo;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -94,7 +95,8 @@ public class MainActivity extends ActionBarActivity {
         String[] projection = {
                 TaskContract.TaskEntry._ID,
                 TaskContract.TaskEntry.COLUMN_NAME_TITLE,
-                TaskContract.TaskEntry.COLUMN_NAME_COMPLETE
+                TaskContract.TaskEntry.COLUMN_NAME_COMPLETE,
+                TaskContract.TaskEntry.COLUMN_NAME_DETAILS
         };
 
         //specify how results are ordered
@@ -114,24 +116,30 @@ public class MainActivity extends ActionBarActivity {
         boolean allRowsLoaded = false;
         //move cursor to first row in the table
 
+        Task task = new Task();
+
         //only try to read the database values if there is something in the table
         if (c.getCount() > 0) {
             c.moveToFirst();
             while (!allRowsLoaded) {
-                String taskTitle = c.getString(
+                task.setTitle( c.getString(
                         c.getColumnIndex(TaskContract.TaskEntry.COLUMN_NAME_TITLE)
-                );
+                ));
 
-                long taskID = c.getLong(
+                task.setId(c.getLong(
                         c.getColumnIndex(TaskContract.TaskEntry._ID)
-                );
+                ));
 
-                String taskComplete = c.getString(
+                task.setComplete(c.getString(
                         c.getColumnIndex(TaskContract.TaskEntry.COLUMN_NAME_COMPLETE)
-                );
+                ));
+
+                task.setDetails(c.getString(
+                        c.getColumnIndex(TaskContract.TaskEntry.COLUMN_NAME_DETAILS)
+                ));
 
                 //render the task
-                createTaskView(taskTitle, taskComplete);
+                createTaskView(task);
 
                 //moveToNext returns true if there is a row in the next position
                 allRowsLoaded = !c.moveToNext();
@@ -145,10 +153,9 @@ public class MainActivity extends ActionBarActivity {
     /**
      * Renders an individual task
      *
-     * @param title String fetched from database indicating the task's title
-     * @param taskStatus String fetched from database indicating whether or not the task is finished
+     * @param task - contains details about task to be created
      */
-    public void createTaskView(String title, String taskStatus) {
+    public void createTaskView(Task task) {
         //get the viewgroup from the pre-defined layout
         LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
         
@@ -157,14 +164,19 @@ public class MainActivity extends ActionBarActivity {
 
         //create a text view to hold the task title
         TextView titleHolder = new TextView(this);
-        titleHolder.setText(bulletPoint + title);
+        titleHolder.setText(bulletPoint + task.getTitle());
         titleHolder.setTextSize(sizeOfTaskTitle);
+
+        //store task id for updating database later
+        titleHolder.setTag(task.getId());
 
         //set dimensions of textView
         titleHolder.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
         //create a checkbox for the task
         CheckBox taskComplete = new CheckBox(this);
+
+        //create onClick handler
         taskComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View checkbox) {
@@ -173,25 +185,22 @@ public class MainActivity extends ActionBarActivity {
                 Boolean foundTitle = false;
                 int layoutChildren = taskContainer.getChildCount();
 
-                for (int i = 0; i < layoutChildren; i++){
-                   if (taskContainer.getChildAt(i) instanceof TextView && !foundTitle){
-                        taskTitle = (TextView)taskContainer.getChildAt(i);
-                       //makes sure the Button does not override the title b/c it is a subclass of TextView
-                       foundTitle = true;
+                for (int i = 0; i < layoutChildren; i++) {
+                    if (taskContainer.getChildAt(i) instanceof TextView && !foundTitle) {
+                        taskTitle = (TextView) taskContainer.getChildAt(i);
+                        //makes sure the Button does not override the title b/c it is a subclass of TextView
+                        foundTitle = true;
                     }
                 }
+                updateTaskStatus(taskTitle, ((CheckBox) checkbox).isChecked());
+                toggleCrossOut(taskTitle, ((CheckBox) checkbox).isChecked());
 
-                //toggle strike through on task
-               if (((CheckBox)checkbox).isChecked()){
-                   taskTitle.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-               } else {
-                   taskTitle.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-               }
             }
         });
 
-        if (taskStatus.equals(Task.TASK_COMPLETE)){
+        if (task.getComplete().equals(Task.TASK_COMPLETE)){
           taskComplete.setChecked(true);
+            toggleCrossOut(titleHolder, ((CheckBox)taskComplete).isChecked());
         }
 
         Button deleteButton = new Button(this);
@@ -214,7 +223,10 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
-
+        LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
+        taskList.removeAllViews();
+        loadTasks();
+        /**
         if (requestCode == staticRequestCode) {
             if (resultCode == Activity.RESULT_OK){
                 Task newTask = data.getParcelableExtra(CreateTask.taskIdentifier);
@@ -223,6 +235,7 @@ public class MainActivity extends ActionBarActivity {
                 createTaskView(newTask.getTitle(), newTask.getComplete());
             }
         }
+         */
     }
 
     public void renderEmptyDatabaseMessage() {
@@ -232,6 +245,38 @@ public class MainActivity extends ActionBarActivity {
         emptyMessageHolder.setText(databaseEmptyMessage);
 
         taskList.addView(emptyMessageHolder);
+    }
+
+    public void updateTaskStatus(TextView taskTitle, boolean checked) {
+        long taskId = (long) taskTitle.getTag();
+        Log.d("Id: ", Long.toString(taskId));
+        String taskStatus;
+
+        if (checked){
+            taskStatus = Task.TASK_COMPLETE;
+        } else {
+            taskStatus = Task.TASK_NOT_COMPLETE;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(TaskContract.TaskEntry.COLUMN_NAME_COMPLETE, taskStatus);
+        String selection = TaskContract.TaskEntry._ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(taskId)};
+
+        int count = MainActivity.mainDb.update(
+                TaskContract.TaskEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs
+        );
+    }
+
+    public void toggleCrossOut(TextView taskTitle, boolean completed) {
+        if (completed) {
+            taskTitle.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            taskTitle.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        }
     }
 
 }
