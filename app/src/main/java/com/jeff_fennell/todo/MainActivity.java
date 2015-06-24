@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Paint;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +30,7 @@ public class MainActivity extends ActionBarActivity {
     public static SQLiteDatabase mainDb;
     public static final int staticRequestCode = 7;
     public static final String bulletPoint = "\u2022 ";
-    public static final String databaseEmptyMessage = "There are no tasks to display";
+    public static final String databaseEmptyMessage = "There are currently no tasks to display";
     public static final int sizeOfTaskTitle = 20;
 
     @Override
@@ -219,6 +220,21 @@ public class MainActivity extends ActionBarActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 LinearLayout taskContainer = (LinearLayout) deleteButton.getParent();
+                                TextView taskTitle = null;
+                                //get id from textview
+
+                                Boolean foundTitle = false;
+                                int layoutChildren = taskContainer.getChildCount();
+
+                                for (int i = 0; i < layoutChildren; i++) {
+                                    if (taskContainer.getChildAt(i) instanceof TextView && !foundTitle) {
+                                        taskTitle = (TextView) taskContainer.getChildAt(i);
+                                        //makes sure the Button does not override the title b/c it is a subclass of TextView
+                                        foundTitle = true;
+                                    }
+                                }
+                                long id = (long)taskTitle.getTag();
+                                deleteTask(id, taskContainer);
                             }
                         });
                 alertDialog.show();
@@ -245,16 +261,6 @@ public class MainActivity extends ActionBarActivity {
         LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
         taskList.removeAllViews();
         loadTasks();
-        /**
-        if (requestCode == staticRequestCode) {
-            if (resultCode == Activity.RESULT_OK){
-                Task newTask = data.getParcelableExtra(CreateTask.taskIdentifier);
-
-                //render the new task to the task list
-                createTaskView(newTask.getTitle(), newTask.getComplete());
-            }
-        }
-         */
     }
 
     public void renderEmptyDatabaseMessage() {
@@ -296,6 +302,19 @@ public class MainActivity extends ActionBarActivity {
         } else {
             taskTitle.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
         }
+    }
+
+    public void deleteTask(long id, LinearLayout taskContainer) {
+        String selection = TaskContract.TaskEntry._ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        mainDb.delete(TaskContract.TaskEntry.TABLE_NAME, selection, selectionArgs);
+
+        deleteRenderedTask(taskContainer);
+    }
+
+    public void deleteRenderedTask(LinearLayout taskContainer) {
+        LinearLayout taskList = (LinearLayout)taskContainer.getParent();
+        taskList.removeView(taskContainer);
     }
 
 }
