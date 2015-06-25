@@ -31,7 +31,8 @@ public class MainActivity extends ActionBarActivity {
     public static final int staticRequestCode = 7;
     public static final String bulletPoint = "\u2022 ";
     public static final String databaseEmptyMessage = "There are currently no tasks to display";
-    public static final int sizeOfTaskTitle = 20;
+    public static final int SIZE_OF_TASK_TITLE_FONT = 20;
+    public static final int SIZE_OF_TASK_DETAILS_FONT = 14;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +60,13 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent launchSettings = new Intent(this,Settings.class);
+            startActivity(launchSettings);
         }
         if (id == R.id.new_task){
             createNewTask();
         }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -158,24 +161,35 @@ public class MainActivity extends ActionBarActivity {
      *
      * @param task - contains details about task to be created
      */
-    public void createTaskView(Task task) {
+    public void creatmesseTaskView(Task task) {
         final String title = task.getTitle();
         //get the viewgroup from the pre-defined layout
         LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
-        
-        //create a container
-        LinearLayout TaskContainer = new LinearLayout(this);
+        LinearLayout taskContainer = new LinearLayout(this);
+        LinearLayout titleContainer = new LinearLayout(this);
+        LinearLayout detailsContainer = new LinearLayout(this);
 
         //create a text view to hold the task title
-        TextView titleHolder = new TextView(this);
-        titleHolder.setText(bulletPoint + task.getTitle());
-        titleHolder.setTextSize(sizeOfTaskTitle);
+        TextView titleView = new TextView(this);
+        titleView.setText(bulletPoint + task.getTitle());
+        titleView.setTextSize(SIZE_OF_TASK_TITLE_FONT);
+        
+        //create text view to hold task details
+        TextView details = new TextView(this);
+        details.setText(task.getDetails());
+        details.setTextSize(SIZE_OF_TASK_DETAILS_FONT);
+
+        details.setPadding(50,0,0,0);
+        detailsContainer.addView(details);
 
         //store task id for updating database later
-        titleHolder.setTag(task.getId());
+        titleView.setTag(task.getId());
 
         //set dimensions of textView
-        titleHolder.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        titleView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+        //stack title and details
+        taskContainer.setOrientation(LinearLayout.VERTICAL);
 
         //create a checkbox for the task
         CheckBox taskComplete = new CheckBox(this);
@@ -204,7 +218,7 @@ public class MainActivity extends ActionBarActivity {
 
         if (task.getComplete().equals(Task.TASK_COMPLETE)){
           taskComplete.setChecked(true);
-            toggleCrossOut(titleHolder, ((CheckBox)taskComplete).isChecked());
+            toggleCrossOut(titleView, ((CheckBox)taskComplete).isChecked());
         }
 
         final Button deleteButton = new Button(this);
@@ -233,7 +247,7 @@ public class MainActivity extends ActionBarActivity {
                                         foundTitle = true;
                                     }
                                 }
-                                long id = (long)taskTitle.getTag();
+                                long id = (long) taskTitle.getTag();
                                 deleteTask(id, taskContainer);
                             }
                         });
@@ -241,11 +255,13 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        TaskContainer.addView(titleHolder);
-        TaskContainer.addView(taskComplete);
-        TaskContainer.addView(deleteButton);
+        titleContainer.addView(titleView);
+        titleContainer.addView(taskComplete);
+        titleContainer.addView(deleteButton);
+        taskContainer.addView(titleContainer);
+        taskContainer.addView(detailsContainer);
 
-        taskList.addView(TaskContainer);
+        taskList.addView(taskContainer);
     }
 
     /**
