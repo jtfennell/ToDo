@@ -24,6 +24,9 @@ import android.widget.Toolbar;
 
 import com.jeff_fennell.dataEntities.Task;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MainActivity extends ActionBarActivity {
     public static TaskDbHelper mainDbHelper;
@@ -31,7 +34,7 @@ public class MainActivity extends ActionBarActivity {
     public static final int staticRequestCode = 7;
     public static final String bulletPoint = "\u2022 ";
     public static final String databaseEmptyMessage = "There are currently no tasks to display";
-    public static final int SIZE_OF_TASK_TITLE_FONT = 20;
+    public static final int SIZE_OF_TASK_TITLE_FONT = 22;
     public static final int SIZE_OF_TASK_DETAILS_FONT = 14;
 
     @Override
@@ -161,25 +164,25 @@ public class MainActivity extends ActionBarActivity {
      *
      * @param task - contains details about task to be created
      */
-    public void creatmesseTaskView(Task task) {
+    public void createTaskView(Task task) {
         final String title = task.getTitle();
         //get the viewgroup from the pre-defined layout
         LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
-        LinearLayout taskContainer = new LinearLayout(this);
+        final LinearLayout taskContainer = new LinearLayout(this);
         LinearLayout titleContainer = new LinearLayout(this);
         LinearLayout detailsContainer = new LinearLayout(this);
 
         //create a text view to hold the task title
-        TextView titleView = new TextView(this);
+        final TextView titleView = new TextView(this);
         titleView.setText(bulletPoint + task.getTitle());
         titleView.setTextSize(SIZE_OF_TASK_TITLE_FONT);
         
         //create text view to hold task details
-        TextView details = new TextView(this);
+        final TextView details = new TextView(this);
         details.setText(task.getDetails());
         details.setTextSize(SIZE_OF_TASK_DETAILS_FONT);
 
-        details.setPadding(50,0,0,0);
+        details.setPadding(100,0,0,0);
         detailsContainer.addView(details);
 
         //store task id for updating database later
@@ -199,26 +202,18 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View checkbox) {
                 LinearLayout taskContainer = (LinearLayout) checkbox.getParent();
-                TextView taskTitle = null;
-                Boolean foundTitle = false;
                 int layoutChildren = taskContainer.getChildCount();
+                List<TextView> viewsToCrossOut = new ArrayList<>();
 
-                for (int i = 0; i < layoutChildren; i++) {
-                    if (taskContainer.getChildAt(i) instanceof TextView && !foundTitle) {
-                        taskTitle = (TextView) taskContainer.getChildAt(i);
-                        //makes sure the Button does not override the title b/c it is a subclass of TextView
-                        foundTitle = true;
-                    }
-                }
-                updateTaskStatus(taskTitle, ((CheckBox) checkbox).isChecked());
-                toggleCrossOut(taskTitle, ((CheckBox) checkbox).isChecked());
+                updateTaskStatus(titleView, ((CheckBox) checkbox).isChecked());
+                toggleCrossOut(titleView, details, ((CheckBox) checkbox).isChecked());
 
             }
         });
 
         if (task.getComplete().equals(Task.TASK_COMPLETE)){
           taskComplete.setChecked(true);
-            toggleCrossOut(titleView, ((CheckBox)taskComplete).isChecked());
+            toggleCrossOut(titleView, details, ((CheckBox)taskComplete).isChecked());
         }
 
         final Button deleteButton = new Button(this);
@@ -233,21 +228,9 @@ public class MainActivity extends ActionBarActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                LinearLayout taskContainer = (LinearLayout) deleteButton.getParent();
-                                TextView taskTitle = null;
                                 //get id from textview
 
-                                Boolean foundTitle = false;
-                                int layoutChildren = taskContainer.getChildCount();
-
-                                for (int i = 0; i < layoutChildren; i++) {
-                                    if (taskContainer.getChildAt(i) instanceof TextView && !foundTitle) {
-                                        taskTitle = (TextView) taskContainer.getChildAt(i);
-                                        //makes sure the Button does not override the title b/c it is a subclass of TextView
-                                        foundTitle = true;
-                                    }
-                                }
-                                long id = (long) taskTitle.getTag();
+                                long id = (long) titleView.getTag();
                                 deleteTask(id, taskContainer);
                             }
                         });
@@ -312,11 +295,14 @@ public class MainActivity extends ActionBarActivity {
         );
     }
 
-    public void toggleCrossOut(TextView taskTitle, boolean completed) {
+    public void toggleCrossOut(TextView taskTitle, TextView details, boolean completed) {
         if (completed) {
             taskTitle.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            details.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             taskTitle.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            details.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+
         }
     }
 
