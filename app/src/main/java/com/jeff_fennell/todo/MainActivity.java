@@ -82,7 +82,6 @@ public class MainActivity extends ActionBarActivity {
     public static void openDatabase(String readOrWrite) {
         //TODO-open up database in background thread because it is a time-expensive operation (will slow down UI thread)
         //subclass AsyncTask-- http://developer.android.com/reference/android/os/AsyncTask.html
-        //use this function in CreateTask when inserting values into database
 
             try{
                 //Access database. If schema not already set up, it will automatically be created
@@ -120,7 +119,6 @@ public class MainActivity extends ActionBarActivity {
                 null, //don't filter by row groups
                 sortOrder
         );
-        String[] columns = c.getColumnNames();
 
         boolean allRowsLoaded = false;
         //move cursor to first row in the table
@@ -298,9 +296,14 @@ public class MainActivity extends ActionBarActivity {
         if (completed) {
             taskTitle.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             details.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);;
+            taskTitle.setTextColor(0xFFC9C9C9);
+            details.setTextColor(0xFFC9C9C9);
         } else {
+            int normalColor = getResources().getColor(R.color.abc_secondary_text_material_light);
             taskTitle.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
             details.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            taskTitle.setTextColor(normalColor);
+            details.setTextColor(normalColor);
 
         }
     }
