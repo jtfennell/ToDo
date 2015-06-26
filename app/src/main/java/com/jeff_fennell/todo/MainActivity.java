@@ -34,8 +34,8 @@ public class MainActivity extends ActionBarActivity {
     public static final int staticRequestCode = 7;
     public static final String bulletPoint = "\u2022 ";
     public static final String databaseEmptyMessage = "There are currently no tasks to display";
-    public static final int SIZE_OF_TASK_TITLE_FONT = 22;
-    public static final int SIZE_OF_TASK_DETAILS_FONT = 14;
+    public static final int SIZE_OF_TASK_TITLE_FONT = 18;
+    public static final int SIZE_OF_TASK_DETAILS_FONT = 11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +218,7 @@ public class MainActivity extends ActionBarActivity {
 
         final Button deleteButton = new Button(this);
         deleteButton.setText("Delete");
+        deleteButton.setTextSize(SIZE_OF_TASK_DETAILS_FONT);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -265,9 +266,7 @@ public class MainActivity extends ActionBarActivity {
     public void renderEmptyDatabaseMessage() {
         LinearLayout taskList = (LinearLayout) findViewById(R.id.task_list);
         TextView emptyMessageHolder = new TextView(this);
-
         emptyMessageHolder.setText(databaseEmptyMessage);
-
         taskList.addView(emptyMessageHolder);
     }
 
@@ -298,7 +297,7 @@ public class MainActivity extends ActionBarActivity {
     public void toggleCrossOut(TextView taskTitle, TextView details, boolean completed) {
         if (completed) {
             taskTitle.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            details.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            details.setPaintFlags(taskTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);;
         } else {
             taskTitle.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
             details.setPaintFlags(taskTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
