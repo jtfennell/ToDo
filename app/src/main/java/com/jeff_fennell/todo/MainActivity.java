@@ -34,7 +34,7 @@ public class MainActivity extends ActionBarActivity {
     public static final int staticRequestCode = 7;
     public static final String bulletPoint = "\u2022 ";
     public static final String databaseEmptyMessage = "There are currently no tasks to display";
-    public static final int SIZE_OF_TASK_TITLE_FONT = 18;
+    public static final int SIZE_OF_TASK_TITLE_FONT = 16;
     public static final int SIZE_OF_TASK_DETAILS_FONT = 11;
 
     @Override
@@ -319,6 +319,10 @@ public class MainActivity extends ActionBarActivity {
     public void deleteRenderedTask(LinearLayout taskContainer) {
         LinearLayout taskList = (LinearLayout)taskContainer.getParent();
         taskList.removeView(taskContainer);
+
+        if (taskList.getChildCount() == 0){
+            renderEmptyDatabaseMessage();
+        }
     }
 
 }
