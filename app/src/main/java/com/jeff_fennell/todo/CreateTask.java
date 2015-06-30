@@ -72,14 +72,9 @@ public class CreateTask extends ActionBarActivity {
         boolean noDetailsInput = splitDetails.length == 1;
         Log.d("title length", Integer.toString(splitTitle.length));
         //input validation
-        if (noTitleInput || noDetailsInput){
+        if (noTitleInput) {
             clearErrors();
-            if (noTitleInput) {
-                addInputValidationError(getString(R.string.task_title));
-            }
-            if (noDetailsInput) {
-                addInputValidationError(getString(R.string.task_details));
-            }
+            addInputValidationError(getString(R.string.task_title));
         }else {
             //Create map of values, where column names are the keys
             ContentValues values = new ContentValues();
@@ -131,11 +126,7 @@ public class CreateTask extends ActionBarActivity {
         TextView errorMessage = new TextView(this);
         errorMessage.setTextColor(0xFFFF0000);
 
-        if (viewWithError.equals(getString(R.string.task_title))){
-            errorMessage.setText(getString(R.string.error_title));
-        } else {
-            errorMessage.setText(getString(R.string.error_details));
-        }
+        errorMessage.setText(getString(R.string.error_title));
 
         errorContainer.addView(errorMessage);
         createTaskContainer.addView(errorContainer);
