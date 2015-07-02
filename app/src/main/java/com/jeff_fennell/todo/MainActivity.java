@@ -1,8 +1,8 @@
 package com.jeff_fennell.todo;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,17 +10,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Paint;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toolbar;
+import android.widget.Toast;
 
 import com.jeff_fennell.dataEntities.Task;
 
@@ -36,6 +34,7 @@ public class MainActivity extends ActionBarActivity {
     public static final String databaseEmptyMessage = "There are currently no tasks to display";
     public static final int SIZE_OF_TASK_TITLE_FONT = 16;
     public static final int SIZE_OF_TASK_DETAILS_FONT = 11;
+    public static final String TOAST_DELETE_MESSAGE = "Task deleted";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +43,7 @@ public class MainActivity extends ActionBarActivity {
 
         mainDbHelper = new TaskDbHelper(getApplicationContext());
         openDatabase("read");
+
         loadTasks();
     }
 
@@ -231,6 +231,7 @@ public class MainActivity extends ActionBarActivity {
 
                                 long id = (long) titleView.getTag();
                                 deleteTask(id, taskContainer);
+
                             }
                         });
                 alertDialog.show();
@@ -319,6 +320,13 @@ public class MainActivity extends ActionBarActivity {
     public void deleteRenderedTask(LinearLayout taskContainer) {
         LinearLayout taskList = (LinearLayout)taskContainer.getParent();
         taskList.removeView(taskContainer);
+
+        Context context = getApplicationContext();
+        CharSequence text = TOAST_DELETE_MESSAGE;
+        int duration = Toast.LENGTH_LONG;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
 
         if (taskList.getChildCount() == 0){
             renderEmptyDatabaseMessage();

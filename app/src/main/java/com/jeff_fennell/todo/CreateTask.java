@@ -13,9 +13,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jeff_fennell.dataEntities.Task;
 
@@ -26,12 +29,14 @@ import java.sql.Timestamp;
 
 public class CreateTask extends ActionBarActivity {
     public static String taskIdentifier = "new task";
+    public static String TOAST_CREATE_MESSAGE = "New task added: ";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
+        setListenerOnSpinner();
 
         MainActivity.openDatabase("write");
     }
@@ -100,18 +105,15 @@ public class CreateTask extends ActionBarActivity {
                     throw new SQLException("There was an error inserting the data into the table");
                 }
             }catch (SQLException e){
-                Log.d("Error", "inserting data into table failed");
+                Log.d("Error", "inserting data into table failed", e);
             }
 
-            //pass the newly created task back to the MainActivity as a parcel
-            Task thisTask = new Task(taskTitle,currentTime,taskDetails,Task.TASK_NOT_COMPLETE);
-            Log.d("task created: ", thisTask.toString());
-            Intent intentToRegisterTask = new Intent();
-            intentToRegisterTask.putExtra(taskIdentifier, thisTask);
-            setResult(Activity.RESULT_OK, intentToRegisterTask);
+            Context context = getApplicationContext();
+            CharSequence text = TOAST_CREATE_MESSAGE + "\"" + taskTitle + "\"";
+            int duration = Toast.LENGTH_LONG;
 
-            //Return to Main Activity
-            Log.d("closing Activity", "CreateTask");
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
 
             finish();
         }
@@ -137,5 +139,26 @@ public class CreateTask extends ActionBarActivity {
         LinearLayout createTaskContainer = (LinearLayout)findViewById(R.id.create_task_container);
 
         createTaskContainer.removeView(errorContainer);
+    }
+
+    public void setListenerOnSpinner(){
+        final Spinner categorySelection = (Spinner)findViewById(R.id.category_selection);
+
+
+        categorySelection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
+                Context context = getApplicationContext();
+                CharSequence text = parent.getItemAtPosition(position).toString();
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
+
+            @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 }

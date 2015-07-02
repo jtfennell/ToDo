@@ -10,4 +10,13 @@
     <string name="hello_world">Coming Soon :)</string>
     <string name="error_title">Please enter a task</string>
     <string name="error_details">Please enter details about the task</string>
+    <string name="category">Category</string>
+    <string name="select_category">Select Category</string>
+
+    <string-array name="task_groups">
+        <item>Array Item One</item>
+        <item>Array Item Two</item>
+        <item>Array Item Three</item>
+        <item>+New Category</item>
+    </string-array>
 </resources>

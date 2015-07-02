@@ -10,11 +10,26 @@
     android:orientation="vertical"
     tools:context="com.jeff_fennell.todo.CreateTask"
     android:id="@+id/create_task_container">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/category"
+        android:textSize="20dp"/>
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"
+        android:entries="@array/task_groups"
+        android:prompt="@string/select_category"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/category_selection">
+    </Spinner>
     <EditText
         android:id="@+id/task_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/task_title"/>
+        android:hint="@string/task_title"
+        />
     <EditText
         android:id="@+id/task_details"
         android:layout_width="match_parent"
@@ -31,5 +46,3 @@
         android:textSize="18dp"
         android:layout_weight="0" />
 </LinearLayout>
-
-
