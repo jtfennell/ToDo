@@ -10,7 +10,7 @@ import android.util.Log;
  */
 public class TaskDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 12;
+    public static final int DATABASE_VERSION = 15;
     public static final String DATABASE_NAME = "Task.db";
 
     //sql formatting
@@ -42,9 +42,15 @@ public class TaskDbHelper extends SQLiteOpenHelper {
     private static final String DELETE_TABLE_CATEGORY =
             "DROP TABLE IF EXISTS " + CategoryContract.categoryEntry.TABLE_NAME;
 
-    private static final String ADD_DEFAULT_CATEGORIES = "INSERT INTO " + CategoryContract.categoryEntry.TABLE_NAME
+    private static final String ADD_SELECT_CATEGORY_MESSAGE = "INSERT INTO " + CategoryContract.categoryEntry.TABLE_NAME
             + "('"  + CategoryContract.categoryEntry.COLUMN_NAME_CATEGORY +  "')"
             + " VALUES(" + "'Select a category')";
+
+    private static final String ADD_NEW_CATEGORY = "INSERT INTO " + CategoryContract.categoryEntry.TABLE_NAME
+            + "('"  + CategoryContract.categoryEntry.COLUMN_NAME_CATEGORY +  "')"
+            + " VALUES(" + "'+New Category')";
+
+
 
 
     public TaskDbHelper(Context context) {
@@ -55,7 +61,7 @@ public class TaskDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_TASKS);
         db.execSQL(CREATE_TABLE_CATEGORY);
-        db.execSQL(ADD_DEFAULT_CATEGORIES);
+        db.execSQL(ADD_SELECT_CATEGORY_MESSAGE);
     }
 
     //look at options for implementing this method. current implementation copied from
@@ -66,11 +72,13 @@ public class TaskDbHelper extends SQLiteOpenHelper {
         //categories for tasks  added at version 8
         if (oldVersion < 8) {
             db.execSQL(CREATE_TABLE_CATEGORY);
-            db.execSQL(ADD_DEFAULT_CATEGORIES);
+            addDefaultCategories(db);
         }
-        db.execSQL(DELETE_TABLE_TASKS);
-        db.execSQL(CREATE_TABLE_TASKS);
+    }
 
+    public void addDefaultCategories(SQLiteDatabase db) {
+        db.execSQL(ADD_NEW_CATEGORY);
+        db.execSQL(ADD_SELECT_CATEGORY_MESSAGE);
     }
 
     @Override

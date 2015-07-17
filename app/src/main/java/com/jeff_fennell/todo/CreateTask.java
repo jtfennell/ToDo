@@ -4,16 +4,17 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -22,9 +23,10 @@ import android.widget.Toast;
 
 import com.jeff_fennell.dataEntities.Task;
 
+import org.w3c.dom.Text;
+
 import java.util.Date;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
 
 public class CreateTask extends ActionBarActivity {
@@ -36,6 +38,7 @@ public class CreateTask extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
+        populateSpinnerWithCategories();
         setListenerOnSpinner();
 
         MainActivity.openDatabase("write");
@@ -144,21 +147,79 @@ public class CreateTask extends ActionBarActivity {
     public void setListenerOnSpinner(){
         final Spinner categorySelection = (Spinner)findViewById(R.id.category_selection);
 
+        categorySelection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                String categorySelected = cursor.getString(position);
 
-        categorySelection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
-                Context context = getApplicationContext();
-                CharSequence text = parent.getItemAtPosition(position).toString();
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+                Log.d("selected category", categorySelected);
+                if (categorySelected.equals("1")) {
+                    toggleCategoryEditText("show");
+                } else {
+                    toggleCategoryEditText("hide");
+                }
             }
 
             @Override
-        public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+            public void toggleCategoryEditText(String hideOrShow) {
+                LinearLayout categoryContainer = (LinearLayout) findViewById(R.id.category_container);
+
+                if (hideOrShow.equals("show")){
+                    EditText categoryEdit = (EditText)getLayoutInflater().inflate(R.layout.category_input,null);
+                    categoryEdit.setHint("Enter a category");
+                    categoryContainer.addView(categoryEdit);
+                } else {
+                    //remove add category edit text
+                }
+
 
             }
         });
+    }
+
+    public void populateSpinnerWithCategories() {
+        MainActivity.openDatabase("read");
+
+        String[] projection = {
+                CategoryContract.categoryEntry.COLUMN_NAME_CATEGORY,
+                CategoryContract.categoryEntry._ID
+        };
+
+        //specify how results are ordered
+        String sortOrder = CategoryContract.categoryEntry.COLUMN_NAME_CATEGORY + " DESC";
+
+        Cursor c = MainActivity.mainDb.query(
+                CategoryContract.categoryEntry.TABLE_NAME,
+                projection,
+                null, //returns all rows of table
+                null,
+                null, //don't group the rows
+                null, //don't filter by row groups
+                sortOrder
+        );
+
+        Spinner categorySelection = (Spinner)findViewById(R.id.category_selection);
+
+        CursorAdapter taskCategoryAdapter = new CursorAdapter(this, c, CursorAdapter.NO_SELECTION) {
+
+            @Override
+            public void bindView(View categories, Context context, Cursor cursor) {
+                TextView categoryName = (TextView) categories.findViewById(R.id.category_content);
+                String categoryNameText = cursor.getString(cursor.getColumnIndex(CategoryContract.categoryEntry.COLUMN_NAME_CATEGORY));
+
+                categoryName.setText(categoryNameText);
+            }
+
+            @Override
+            public View newView(Context context, Cursor cursor, ViewGroup parent) {
+               return LayoutInflater.from(context).inflate(R.layout.category_template, parent, false);
+            }
+        };
+        categorySelection.setAdapter(taskCategoryAdapter);
+        MainActivity.mainDb.close();
     }
 }
