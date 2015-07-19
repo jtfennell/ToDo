@@ -10,7 +10,7 @@ import android.util.Log;
  */
 public class TaskDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 12;
+    public static final int DATABASE_VERSION = 16;
     public static final String DATABASE_NAME = "Task.db";
 
     //sql formatting
@@ -68,8 +68,6 @@ public class TaskDbHelper extends SQLiteOpenHelper {
             db.execSQL(CREATE_TABLE_CATEGORY);
             db.execSQL(ADD_DEFAULT_CATEGORIES);
         }
-        db.execSQL(DELETE_TABLE_TASKS);
-        db.execSQL(CREATE_TABLE_TASKS);
 
     }
 
